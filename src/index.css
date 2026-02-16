@@ -1,0 +1,149 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 
+   Machine Learning–Based Smart Pricing Prediction System
+   Clean Academic Design System
+*/
+
+@layer base {
+  :root {
+    /* Global Background: Soft white -> light gray (Defined in body, tokens here) */
+    --background: 210 20% 98%;
+    /* hsl(210, 20%, 98%) - #f8fafc approx */
+    --foreground: 222 47% 30%;
+    /* #475569 cool gray body text */
+
+    /* Cards: White, simple border */
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    /* Primary: Solid Blue #2563eb -> hsl(221, 83%, 53%) */
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary: White bg, Blue text/border -> managed via classes often, but defining base */
+    --secondary: 0 0% 100%;
+    --secondary-foreground: 221 83% 53%;
+
+    /* Muted/Subtle */
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    /* #64748b cool gray */
+
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 214 32% 91%;
+    /* #e5e7eb approx */
+    --input: 214 32% 91%;
+    --ring: 221 83% 53%;
+
+    --radius: 0.5rem;
+    /* Medium radius */
+
+    /* Gradients */
+    /* Hero Title Gradient: #2563eb -> #3b82f6 -> #60a5fa */
+    --gradient-hero-text: linear-gradient(to right, #2563eb, #3b82f6, #60a5fa);
+
+    /* Global Background Gradient: #ffffff -> #f8fafc -> #f1f5f9 */
+    --gradient-background: linear-gradient(to bottom, #ffffff, #f8fafc, #f1f5f9);
+
+    /* Subtle Shadow */
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  }
+
+  /* No dark mode adjustments as requested */
+  .dark {
+    /* Identical to light mode to enforce theme */
+    --background: 210 20% 98%;
+    --foreground: 222 47% 30%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 100%;
+    --secondary-foreground: 221 83% 53%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 221 83% 53%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply text-foreground font-sans antialiased;
+    background: var(--gradient-background);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold tracking-tight text-slate-900;
+  }
+
+  p {
+    @apply text-slate-600;
+  }
+}
+
+@layer components {
+
+  /* Clean Card Style - White, Border, Subtle Shadow */
+  .academic-card {
+    @apply bg-white border border-gray-200 rounded-lg shadow-sm;
+  }
+
+  /* Primary Button - Solid Blue */
+  .btn-primary {
+    @apply bg-[#2563eb] text-white hover:bg-[#1d4ed8] rounded-md transition-colors font-medium px-4 py-2;
+  }
+
+  /* Secondary Button - White with Blue Border */
+  .btn-secondary {
+    @apply bg-white text-[#2563eb] border border-[#2563eb] hover:bg-slate-50 rounded-md transition-colors font-medium px-4 py-2;
+  }
+
+  /* Hero Title Text Gradient */
+  .text-gradient-blue {
+    background: var(--gradient-hero-text);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Remove old glassmorphism/aurora effects */
+  .glass-card {
+    @apply bg-white border border-gray-200 rounded-lg shadow-sm backdrop-blur-none;
+  }
+
+  .hero-gradient {
+    background: none;
+  }
+}
