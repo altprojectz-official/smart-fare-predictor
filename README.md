@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Smart Price Suggestion System
 
 ## Project Overview
@@ -78,3 +79,6 @@ Open your browser and visit: `http://localhost:5173`
 
 **I. Mohamed Arshath**
 B.Sc Artificial Intelligence & Machine Learning
+=======
+# Taxi-Price-Prediction--ML
+>>>>>>> 666ea522a2b8749ed291378f41d43cd19cdc5219
