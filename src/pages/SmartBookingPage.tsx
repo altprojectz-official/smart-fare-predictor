@@ -1,5 +1,6 @@
 import { useState } from "react";
 import MainLayout from "@/layouts/MainLayout";
+import { getApiUrl } from "@/lib/api-config";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -162,7 +163,7 @@ const SmartBookingPage = () => {
                 drop_coords: dropCoords      // [lat, lon] or null
             };
 
-            const response = await fetch("/api/smart-predict", {
+            const response = await fetch(getApiUrl("/api/smart-predict"), {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)

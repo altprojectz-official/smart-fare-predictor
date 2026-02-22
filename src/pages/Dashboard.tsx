@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import MainLayout from "@/layouts/MainLayout";
+import { getApiUrl } from "@/lib/api-config";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BarChart3, LineChart, PieChart, Brain, TrendingUp, Clock, Bike, Car } from "lucide-react";
@@ -45,10 +46,10 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         const [demandRes, timeRes, rideRes, metricsRes] = await Promise.all([
-          fetch("http://127.0.0.1:8000/api/dashboard/demand-trend"),
-          fetch("http://127.0.0.1:8000/api/dashboard/time-price"),
-          fetch("http://127.0.0.1:8000/api/dashboard/ride-distribution"),
-          fetch("http://127.0.0.1:8000/api/dashboard/model-metrics")
+          fetch(getApiUrl("/api/dashboard/demand-trend")),
+          fetch(getApiUrl("/api/dashboard/time-price")),
+          fetch(getApiUrl("/api/dashboard/ride-distribution")),
+          fetch(getApiUrl("/api/dashboard/model-metrics"))
         ]);
 
         const demand = await demandRes.json();

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import MainLayout from "@/layouts/MainLayout";
+import { getApiUrl } from "@/lib/api-config";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -83,7 +84,7 @@ const PredictPage = () => {
         pickup_zone: toTitleCase(pickupLocation),
       };
 
-      const response = await fetch("/api/predict", {
+      const response = await fetch(getApiUrl("/api/predict"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

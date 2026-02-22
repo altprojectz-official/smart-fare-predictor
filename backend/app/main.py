@@ -23,7 +23,9 @@ async def health():
 origins = [
     "http://localhost:5173",
     "http://localhost:3000",
-    os.getenv("FRONTEND_URL", "*"), # Add your Vercel URL in Render dashboard
+    "https://smart-fare-predictor-fp7bwjkba-altprojectz-officials-projects.vercel.app",
+    "https://smart-fare-predictor.vercel.app",
+    os.getenv("FRONTEND_URL", "*"), # Fallback to env or wildcard
 ]
 
 app.add_middleware(
