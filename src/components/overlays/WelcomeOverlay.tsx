@@ -6,6 +6,14 @@ const WelcomeOverlay = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [shouldRender, setShouldRender] = useState(false);
 
+    const closeOverlay = () => {
+        setIsVisible(false);
+        // Remove from DOM after fade out animation completes
+        setTimeout(() => {
+            setShouldRender(false);
+        }, 700);
+    };
+
     useEffect(() => {
         setShouldRender(true);
         // Small delay to ensure clean mounting before fading in
@@ -13,11 +21,7 @@ const WelcomeOverlay = () => {
 
         // Total duration: 5-8 seconds as requested
         const timer = setTimeout(() => {
-            setIsVisible(false);
-            // Remove from DOM after fade out animation completes
-            setTimeout(() => {
-                setShouldRender(false);
-            }, 700); // 700ms matches the fade-out duration
+            closeOverlay();
         }, 7000);
 
         return () => clearTimeout(timer);
@@ -27,12 +31,14 @@ const WelcomeOverlay = () => {
 
     return (
         <div
-            className={`fixed inset-0 z-[100] flex items-center justify-center p-4 transition-all duration-700 ease-in-out ${isVisible ? 'opacity-100 bg-slate-900/60' : 'opacity-0 bg-slate-900/0'
+            onClick={closeOverlay}
+            className={`fixed inset-0 z-[100] flex items-center justify-center p-4 transition-all duration-700 ease-in-out cursor-pointer ${isVisible ? 'opacity-100 bg-slate-900/60' : 'opacity-0 bg-slate-900/0'
                 }`}
         >
             {/* Main Card */}
             <div
-                className={`bg-white rounded-lg shadow-xl border border-slate-200 p-10 max-w-5xl w-full flex flex-col md:flex-row overflow-hidden transition-all duration-700 transform ${isVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'
+                onClick={(e) => e.stopPropagation()}
+                className={`bg-white rounded-lg shadow-xl border border-slate-200 p-10 max-w-5xl w-full flex flex-col md:flex-row overflow-hidden transition-all duration-700 transform cursor-default ${isVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'
                     }`}
             >
 
