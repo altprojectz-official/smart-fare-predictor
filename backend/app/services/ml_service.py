@@ -1,72 +1,70 @@
 import joblib
-import pandas as pd
+import numpy as np
 import os
-import sys
+import gc
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class MLService:
     def __init__(self):
         self.model = None
         self.preprocessor = None
-        self._load_model()
+        
+        # Absolute paths for reliability
+        self.base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        self.model_path = os.path.join(self.base_dir, 'ml', 'model.pkl')
+        self.preprocessor_path = os.path.join(self.base_dir, 'ml', 'preprocessor.pkl')
 
-    def _load_model(self):
-        try:
-            # Construct absolute paths
-            # Assuming this file is at backend/app/services/ml_service.py
-            # Models are at backend/ml/
-            
-            base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-            model_path = os.path.join(base_dir, 'ml', 'model.pkl')
-            preprocessor_path = os.path.join(base_dir, 'ml', 'preprocessor.pkl')
-
-            print(f"Loading model from: {model_path}")
-            print(f"Loading preprocessor from: {preprocessor_path}")
-
-            if not os.path.exists(model_path) or not os.path.exists(preprocessor_path):
-                raise FileNotFoundError("Model or preprocessor file not found")
-
-            self.model = joblib.load(model_path)
-            self.preprocessor = joblib.load(preprocessor_path)
-            print("Model and preprocessor loaded successfully")
-
-        except Exception as e:
-            print(f"Error loading ML model: {str(e)}")
-            # In production, we might want to handle this more gracefully or fail startup
-            # For now, we'll let it fail when predict is called if load failed
+    def _load_resources(self):
+        """Lazy load model and preprocessor with memory management."""
+        if self.model is None or self.preprocessor is None:
+            logger.info("Initializing lazy load of ML components...")
+            try:
+                # mmap_mode="r" allows reading large files without loading entire content into RAM
+                # This is highly dependent on the model structure but very useful for Free Tiers
+                self.model = joblib.load(self.model_path, mmap_mode="r")
+                self.preprocessor = joblib.load(self.preprocessor_path)
+                
+                logger.info("ML components loaded successfully.")
+                
+                # Proactive garbage collection to free any buffers used during load
+                gc.collect()
+            except Exception as e:
+                logger.error(f"Failed to load ML components: {str(e)}")
+                raise RuntimeError("Service temporarily unavailable due to ML engine failure.")
 
     def predict_base_fare(self, ride_data: dict) -> float:
-        if not self.model or not self.preprocessor:
-            self._load_model()
-            if not self.model:
-                raise RuntimeError("Model not loaded")
+        """Prediction using minimal memory footprint."""
+        self._load_resources()
 
-        # Convert simple dict to DataFrame for pipeline
-        # Note: We ensure column names match what the model expects
+        # Optimize: Avoid Pandas if possible. 
+        # However, ColumnTransformer usually requires a DataFrame or specific layout.
+        # We use a small local import to keep startup memory low.
+        import pandas as pd
         
-        # The model expects columns:
-        # 'ride_type', 'time_of_day', 'day_type', 'demand_level', 
-        # 'traffic_condition', 'weather_condition', 'pickup_zone', 'distance'
+        # Define exact column order as expected by the preprocessor
+        feature_cols = [
+            'ride_type', 'time_of_day', 'day_type', 'demand_level', 
+            'traffic_condition', 'weather_condition', 'pickup_zone', 'distance'
+        ]
         
-        input_data = {
-            'ride_type': [ride_data['ride_type']],
-            'time_of_day': [ride_data['time_of_day']],
-            'day_type': [ride_data['day_type']],
-            'demand_level': [ride_data['demand_level']],
-            'traffic_condition': [ride_data['traffic_condition']],
-            'weather_condition': [ride_data['weather_condition']],
-            'pickup_zone': [ride_data['pickup_zone']],
-            'distance': [ride_data['distance']]
-        }
+        # Create single-row DataFrame efficiently
+        df = pd.DataFrame([ride_data], columns=feature_cols)
         
-        df = pd.DataFrame(input_data)
+        # Process and Predict
+        processed_data = self.preprocessor.transform(df)
+        prediction = self.model.predict(processed_data)
         
-        # Transform features
-        X_processed = self.preprocessor.transform(df)
+        # Return serializable float
+        result = float(prediction[0])
         
-        # Predict
-        prediction = self.model.predict(X_processed)
+        # OPTIONAL: Clear data if needed, though single row is negligible
+        del df, processed_data
         
-        return float(prediction[0])
+        return result
 
-# Global instance
+# Singleton instance exported
 ml_service = MLService()
