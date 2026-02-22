@@ -1,6 +1,10 @@
+import os
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import predict, dashboard, route_info, context, smart_predict, distance
+
+load_dotenv()
 
 app = FastAPI(title="Dynamic Pricing Ride Fare Predictor API")
 
@@ -9,7 +13,7 @@ origins = [
     "http://localhost",
     "http://localhost:3000",
     "http://localhost:5173",  # Common Vite port
-    "*" # For development simplicity
+    os.getenv("FRONTEND_URL", "*"), # Get from env or fallback to wildcard
 ]
 
 app.add_middleware(
