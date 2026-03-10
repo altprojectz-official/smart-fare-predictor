@@ -7,7 +7,7 @@
 const isProduction = import.meta.env.PROD;
 
 export const API_BASE_URL = import.meta.env.VITE_API_URL || (isProduction
-    ? "https://smart-fare-predictor-production.up.railway.app"
+    ? "https://smart-fare-predictor-xho9.onrender.com"
     : ""); // Empty string means use relative path (proxied in dev)
 
 export const getApiUrl = (endpoint: string) => {
