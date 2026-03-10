@@ -6,9 +6,9 @@
 // which is proxied by Vite to http://localhost:8000
 const isProduction = import.meta.env.PROD;
 
-export const API_BASE_URL = isProduction
-    ? "https://smart-fare-predictor-1.onrender.com"
-    : ""; // Empty string means use relative path (proxied in dev)
+export const API_BASE_URL = import.meta.env.VITE_API_URL || (isProduction
+    ? "https://smart-fare-predictor-production.up.railway.app"
+    : ""); // Empty string means use relative path (proxied in dev)
 
 export const getApiUrl = (endpoint: string) => {
     // Ensure endpoint starts with /

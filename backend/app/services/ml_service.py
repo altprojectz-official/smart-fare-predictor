@@ -23,8 +23,8 @@ class MLService:
         if self.model is None or self.preprocessor is None:
             logger.info("Loading ML models for the first time...")
             try:
-                # Load models
-                self.model = joblib.load(self.model_path, mmap_mode="r")
+                # Load models normally into RAM (reliable for cloud containers)
+                self.model = joblib.load(self.model_path)
                 self.preprocessor = joblib.load(self.preprocessor_path)
                 
                 logger.info("ML components loaded successfully.")
@@ -33,9 +33,7 @@ class MLService:
                 gc.collect()
             except Exception as e:
                 logger.error(f"Critical Error: Failed to load ML components: {str(e)}")
-                # We don't raise here usually during startup if we want the app to still serve other routes,
-                # but for this app it's critical.
-                raise RuntimeError("ML engine failed to initialize.")
+                raise RuntimeError(f"ML engine failed to initialize: {str(e)}")
 
     def predict_base_fare(self, ride_data: dict) -> float:
         """Prediction using pre-loaded models."""
