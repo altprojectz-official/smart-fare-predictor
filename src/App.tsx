@@ -11,6 +11,7 @@ import ArchitecturePage from "./pages/ArchitecturePage";
 import AboutPage from "./pages/AboutPage";
 import NotFound from "./pages/NotFound";
 import WelcomeOverlay from "./components/overlays/WelcomeOverlay";
+import { Analytics } from "@vercel/analytics/react";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
+      <Analytics />
     </TooltipProvider>
   </QueryClientProvider>
 );
