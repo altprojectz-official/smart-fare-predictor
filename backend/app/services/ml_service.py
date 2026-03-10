@@ -23,15 +23,6 @@ class MLService:
         if self.model is None or self.preprocessor is None:
             logger.info("Initializing ML models for the first time...")
             try:
-                # Debug: Check if files are actual models or just Git LFS pointers
-                model_size = os.path.getsize(self.model_path)
-                logger.info(f"Model file size: {model_size} bytes")
-                
-                if model_size < 1000:
-                    with open(self.model_path, 'r') as f:
-                        content = f.read(500)
-                        logger.error(f"MODEL FILE APPEARS TO BE A POINTER: {content}")
-                
                 # Load models normally into RAM
                 self.model = joblib.load(self.model_path)
                 self.preprocessor = joblib.load(self.preprocessor_path)

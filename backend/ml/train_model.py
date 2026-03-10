@@ -71,7 +71,14 @@ preprocessor = ColumnTransformer(
 )
 
 # 4. Model
-model = RandomForestRegressor(n_estimators=100, random_state=42)
+# Optimized for size to avoid Git LFS and fit in memory-constrained cloud environments
+model = RandomForestRegressor(
+    n_estimators=100, 
+    max_depth=12, 
+    min_samples_leaf=5, 
+    random_state=42,
+    n_jobs=-1 # Faster training
+)
 
 # 5. Train-Test Split
 print("Splitting data...")
