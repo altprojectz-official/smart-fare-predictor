@@ -10,4 +10,5 @@ COPY ./ml /app/ml
 COPY ./.env /app/.env
 COPY ./data /app/data
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "10000", "--workers", "1"]
+# Use shell form for CMD so environment variables like $PORT are expanded natively
+CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1
