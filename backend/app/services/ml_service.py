@@ -1,5 +1,5 @@
 import joblib
-import numpy as np
+import pandas as pd
 import os
 import gc
 import logging
@@ -18,33 +18,30 @@ class MLService:
         self.model_path = os.path.join(self.base_dir, 'ml', 'model.pkl')
         self.preprocessor_path = os.path.join(self.base_dir, 'ml', 'preprocessor.pkl')
 
-    def _load_resources(self):
-        """Lazy load model and preprocessor with memory management."""
+    def load_model(self):
+        """Load model and preprocessor once at startup."""
         if self.model is None or self.preprocessor is None:
-            logger.info("Initializing lazy load of ML components...")
+            logger.info("Loading ML models for the first time...")
             try:
-                # mmap_mode="r" allows reading large files without loading entire content into RAM
-                # This is highly dependent on the model structure but very useful for Free Tiers
+                # Load models
                 self.model = joblib.load(self.model_path, mmap_mode="r")
                 self.preprocessor = joblib.load(self.preprocessor_path)
                 
                 logger.info("ML components loaded successfully.")
                 
-                # Proactive garbage collection to free any buffers used during load
+                # Garbage collection to keep memory clean after loading
                 gc.collect()
             except Exception as e:
-                logger.error(f"Failed to load ML components: {str(e)}")
-                raise RuntimeError("Service temporarily unavailable due to ML engine failure.")
+                logger.error(f"Critical Error: Failed to load ML components: {str(e)}")
+                # We don't raise here usually during startup if we want the app to still serve other routes,
+                # but for this app it's critical.
+                raise RuntimeError("ML engine failed to initialize.")
 
     def predict_base_fare(self, ride_data: dict) -> float:
-        """Prediction using minimal memory footprint."""
-        self._load_resources()
+        """Prediction using pre-loaded models."""
+        if self.model is None or self.preprocessor is None:
+            self.load_model()
 
-        # Optimize: Avoid Pandas if possible. 
-        # However, ColumnTransformer usually requires a DataFrame or specific layout.
-        # We use a small local import to keep startup memory low.
-        import pandas as pd
-        
         # Define exact column order as expected by the preprocessor
         feature_cols = [
             'ride_type', 'time_of_day', 'day_type', 'demand_level', 
@@ -52,6 +49,7 @@ class MLService:
         ]
         
         # Create single-row DataFrame efficiently
+        # Using a list of dictionaries for single row is fast
         df = pd.DataFrame([ride_data], columns=feature_cols)
         
         # Process and Predict
@@ -61,7 +59,8 @@ class MLService:
         # Return serializable float
         result = float(prediction[0])
         
-        # OPTIONAL: Clear data if needed, though single row is negligible
+        # Explicitly delete temporary large objects and collect garbage if necessary
+        # (Though single row is small, it's good practice for memory-constrained envs)
         del df, processed_data
         
         return result

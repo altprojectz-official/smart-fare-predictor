@@ -1,10 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from app.models.prediction import Prediction
-import pandas as pd
-import numpy as np
 import os
-import joblib
 
 class AnalyticsService:
     def __init__(self, db: Session):

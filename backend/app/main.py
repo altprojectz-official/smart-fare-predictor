@@ -6,12 +6,25 @@ from fastapi.middleware.cors import CORSMiddleware
 # Import routes
 from app.routes import predict, dashboard, route_info, context, smart_predict, distance
 
+from contextlib import asynccontextmanager
+from app.services.ml_service import ml_service
+
 # Load env early
 load_dotenv()
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Load ML models on startup
+    print("Startup: Loading ML models...")
+    ml_service.load_model()
+    yield
+    # Shutdown logic if needed
+    print("Shutting down...")
+
 app = FastAPI(
     title="Smart Fare Predictor API",
-    description="Optimized for Render Free Tier"
+    description="Optimized for Render Free Tier",
+    lifespan=lifespan
 )
 
 # 1. Health Check Endpoint (Required for Render to monitor stability)
