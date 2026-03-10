@@ -23,13 +23,20 @@ class MLService:
         if self.model is None or self.preprocessor is None:
             logger.info("Initializing ML models for the first time...")
             try:
-                # Load models normally into RAM (reliable for cloud containers)
+                # Debug: Check if files are actual models or just Git LFS pointers
+                model_size = os.path.getsize(self.model_path)
+                logger.info(f"Model file size: {model_size} bytes")
+                
+                if model_size < 1000:
+                    with open(self.model_path, 'r') as f:
+                        content = f.read(500)
+                        logger.error(f"MODEL FILE APPEARS TO BE A POINTER: {content}")
+                
+                # Load models normally into RAM
                 self.model = joblib.load(self.model_path)
                 self.preprocessor = joblib.load(self.preprocessor_path)
                 
                 logger.info("ML components loaded successfully.")
-                
-                # Garbage collection to keep memory clean after loading
                 gc.collect()
             except Exception as e:
                 logger.error(f"Critical Error: Failed to load ML components: {str(e)}")
