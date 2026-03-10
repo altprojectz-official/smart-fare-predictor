@@ -21,7 +21,7 @@ class MLService:
     def load_model(self):
         """Load model and preprocessor once at startup."""
         if self.model is None or self.preprocessor is None:
-            logger.info("Loading ML models for the first time...")
+            logger.info("Initializing ML models for the first time...")
             try:
                 # Load models normally into RAM (reliable for cloud containers)
                 self.model = joblib.load(self.model_path)
